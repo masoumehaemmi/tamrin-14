@@ -9,7 +9,7 @@ class Game(arcade.Window):
     def __init__(self):
         self.w = 1000
         self.h =700
-        self.gravity = 0.2
+        self.gravity = 0.1
         super().__init__(self.w,self.h, "Platform Game")
         self.background_image= arcade.load_texture("th.jpg")
 
@@ -36,7 +36,7 @@ class Game(arcade.Window):
             self.ground_list.append(ground)
 
         for i in range (100, 500, 80):
-            box= Box(i, 500)
+            box= Box(i, 530)
             self.ground_list.append(box)
 
         for i in range (500, 700,80):
