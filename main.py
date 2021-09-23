@@ -1,123 +1,61 @@
-import time
-import arcade
 
-from Player import Player
-from ground import Ground ,Box
-from enemy import Enemy
+import arcade
+from ground import Ground
+from dino import Dino
+from bird import Bird
 
 class Game(arcade.Window):
     def __init__(self):
         self.w = 1000
-        self.h =700
-        self.gravity = 0.1
-        super().__init__(self.w,self.h, "Platform Game")
-        self.background_image= arcade.load_texture("th.jpg")
-
-        self.t1 = time.time()
-
-        self.key = arcade.Sprite(":resources:images/items/keyGreen.png")
-        self.key.center_x = 100
-        self.key.center_y = 600
-        self.key.width = 50
-        self.key.height = 50
-        
-        self.lock = arcade.Sprite(":resources:images/tiles/lockRed.png")
-        self.lock.center_x = 900
-        self.lock.center_y = 130
-        self.lock.width = 50
-        self.lock.height = 50
-
-        self.me = Player()
+        self.h = 500
+        self.gravity = 0.5
+        super().__init__(self.w,self.h, "T_Rex Game Saeideh")
+        self.color = arcade.color.WHITE
         self.ground_list = arcade.SpriteList()
-        self.enemy_list = arcade.SpriteList()
+        self.dino = Dino(self.width,self.height)
         
-        for i in range (0, 1000,120):
-            ground= Ground(i, 40)
+        for i in range(self.w, self.h):
+            ground = Ground(i ,100)
             self.ground_list.append(ground)
-
-        for i in range (100, 500, 80):
-            box= Box(i, 530)
-            self.ground_list.append(box)
-
-        for i in range (500, 700,80):
-            box= Box(i, 270)
-            self.ground_list.append(box)
-
-
-
-
-        self.my_physics_engine = arcade.PhysicsEnginePlatformer(self.me, self.ground_list,gravity_constant=self.gravity)
         
-        self.enemy_physics_engine_list = []
-
-
-    def on_draw(self):
-        arcade.start_render()
-        arcade.draw_lrwh_rectangle_textured(0, 0, self.w, self.h,self.background_image)
+        self.bird_speed = -5
+        self.bird_list = arcade.SpriteList()
         
-        try:
-            self.key.draw()
+        for i in range(self.w,self.h):
+            bird = Bird(i, 400)
+            self.bird_list.append(bird)
 
-        except:
-            pass  
+        self.physics_engine = arcade.PhysicsEnginePlatformer( self.dino,self.ground_list, self.gravity)
 
-        self.lock.draw()
+def on_draw(self, w, h):
+    arcade.start_render()
+    arcade.draw_lrwh_rectangle_textured(self.w,self.h,self.color)
 
-        self.me.draw()
-        for ground in self.ground_list:
-            ground.draw()
+    self.dino.draw()
+    self.bird.draw()
 
-        for enemy in self.enemy_list:
-            enemy.draw()
+    for ground in self.ground_list:
+            ground.draw()   
+    
+    for bird in self.bird_list:
+            bird.draw()
 
-    def on_update(self, delta_time:float):
-        self.t2 = time.time()
+def on_update(self,delta_time:float):
 
-        try:
-            if arcade.check_for_collision(self.me, self.key):
-                self.me.pocket.append(self.key)
-                del self.key
+    self.physics_engine.update()
 
-        except:
-            pass        
-        
-        if arcade.check_for_collision(self.me,self.lock) and len(self.me.pocket) == 1 :
-            self.lock.texture = arcade.load_texture(":resources:images/items/gold_2.png")
+    for ground in self.ground_list:
+            if ground.center_x<0:
+                self.ground_list.remove(ground)
+                gr = Ground(self.w-64 ,100)
+                self.ground_list.append(gr)
 
+    for bird in self.bird_list:
+            bird.update()
 
+def on_key_press(self, key, modifiers):
+    if key == arcade.key.RIGHT:
+        self.ground.change_x = 1
 
-        if self.t2 - self.t1 > 5 :
-            new_enemy = Enemy()
-            self.enemy_list.append(new_enemy)
-            self.enemy_physics_engine_list.append(arcade.PhysicsEnginePlatformer(new_enemy, self.ground_list,gravity_constant=self.gravity))
-            self.t1 = time.time()
-
-        self.my_physics_engine.update()
-
-        for item in self.enemy_physics_engine_list:
-            item.update()
-           
-        for enemy in self.enemy_list:
-           enemy.update_animation()
-        
-        self.me.update_animation()
-        
-
-
-    def on_key_press(self, key, modifiers):
-        
-        if key == arcade.key.LEFT:
-            self.me.change_x = -1 * self.me.speed
-        
-        elif key == arcade.key.RIGHT:
-            self.me.change_x = 1 *self.me.speed
-
-        elif key == arcade.key.UP:
-           if self.my_physics_engine.can_jump():
-             self.me.change_y = 10
-
-    def on_key_release(self, key, modifiers):
-        self.me.change_x = 0
-
-game=Game()
+game= Game()
 arcade.run()
