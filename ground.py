@@ -1,25 +1,19 @@
 import arcade
 
-class Ground(arcade.Sprite):
-    def __init__(self, x, y):
-         super().__init__()
+class Ground(arcade.AnimatedWalkingSprite):
+    def __init__(self,width, height):
+        super().__init__()
 
-         self.texture=arcade.load_texture( ":resources:images/tiles/grassLeft.png")
+        self.walk_left_textures = [arcade.load_texture("image\ground0.jpg"),
+                                   arcade.load_texture("image\ground1.jpg1"),
+                                   arcade.load_texture("image\ground2.jpg2")]
+        self.center_x = width
+        self.center_y = height
 
-         self.center_x = x
-         self.center_y = y
+        self.width = 50
+        self.height = 50
 
-         self.width = 120
-         self.height = 120
+        self.change_x = -4
+        self.change_y =0
 
-class Box(arcade.Sprite):
-    def __init__(self, x, y):
-         super().__init__()
-
-         self.texture=arcade.load_texture( ":resources:images/tiles/grassRight.png/")
-
-         self.center_x = x
-         self.center_y = y
-
-         self.width = 120
-         self.height = 120
+        self.speed = 4
